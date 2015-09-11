@@ -8,9 +8,9 @@
 	xmlns:rich="http://richfaces.org/rich">
 	
 		<p class="disclaimer">
-			You must accept the following disclaimer to use our services : 
+			You must accept the following disclaimer to use our services ( this will install a cookie in your web browser ) : 
 		</p>
-		<ui:include src="disclaimerText.xhtml"></ui:include>
+		
 		<h:form class="disclaimer">
 			<!--   -->
 			 <input type="hidden" name="sourcePage" value="#{view.viewId}" />
@@ -20,4 +20,6 @@
 	 
 	   		<h:commandButton value="Submit" action="#{disclaimerForm.validate}" /> 
 		</h:form>
+		
+		<ui:include src="disclaimerText.xhtml"></ui:include>
 </ui:composition>
