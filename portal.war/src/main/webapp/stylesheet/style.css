@@ -102,14 +102,14 @@
 }
 
 .showRequestPanel{
-	width: 890px;
-	height: 70px;
+	width: 500px;
+	height: 210px;
 	margin-left : 3px;
 }
 
 .showRequestText{
-	width: 870px;
-	height: 40px;
+	width: 488px;
+	height: 178px;
 }
 
 .queryProgressPanel{
@@ -189,3 +189,8 @@
 .nodesTable{
 	width : 90%;	
 }
+
+.resultTable select{
+	width : 250px;
+}
+
