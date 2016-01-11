@@ -17,7 +17,7 @@ import org.vamdc.portal.session.queryBuilder.fields.SuggestionField;
 import org.vamdc.portal.session.queryBuilder.fields.SuggestionImpl;
 import org.vamdc.portal.session.queryBuilder.fields.TextField;
 
-public class MoleculesForm extends SpeciesForm implements Form{
+public class MoleculesForm extends AbstractForm implements SpeciesForm{
 
 	/**
 	 * Molecule info from species database
@@ -57,7 +57,6 @@ public class MoleculesForm extends SpeciesForm implements Form{
 	}
 	
 	protected void init(){
-        
 		molChemName = new SuggestionField(null,"Chemical name", new ChemNameSuggestion());
 		addField(molChemName);
 
@@ -81,11 +80,7 @@ public class MoleculesForm extends SpeciesForm implements Form{
 		super.clear();
 		resetInchiKeys();
 		molecules = Collections.emptyList();
-	}
-	
-	public String info(){
-		return "test";
-	}
+	}	
 
 	public List<MoleculeInfo> getMolecules() { return molecules; }
 
@@ -154,7 +149,7 @@ public class MoleculesForm extends SpeciesForm implements Form{
 		@Override
 		public Collection<String> options(Object input) {
 			EntityManager em= (EntityManager) Component.getInstance("entityManager");
-			return EntityFacade.suggestChemicalName(em,(String)input);
+			return EntityFacade.suggestMoleculeName(em,(String)input);
 		}
 
 		@Override
@@ -180,7 +175,7 @@ public class MoleculesForm extends SpeciesForm implements Form{
 		@Override
 		public Collection<String> options(Object input) {
 			EntityManager em = (EntityManager) Component.getInstance("entityManager");
-			return EntityFacade.suggestStoichiometricFormula(em,(String)input);
+			return EntityFacade.suggestMoleculeStoichiometricFormula(em,(String)input);
 		}
 
 		@Override
@@ -204,7 +199,7 @@ public class MoleculesForm extends SpeciesForm implements Form{
 		@Override
 		public Collection<String> options(Object input) {
 			EntityManager em = (EntityManager) Component.getInstance("entityManager");
-			return EntityFacade.suggestOrdinaryFormula(em,(String)input);
+			return EntityFacade.suggestMoleculeOrdinaryFormula(em,(String)input);
 		}
 
 		@Override
