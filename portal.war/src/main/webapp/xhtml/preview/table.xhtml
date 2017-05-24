@@ -6,15 +6,23 @@
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:rich="http://richfaces.org/rich"
-	xmlns:a4j="http://richfaces.org/a4j">
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:a4j="http://richfaces.org/a4j">	
 
 
-
+	<h:panelGroup layout="block" >
+		<h:outputText id="logRequestStatus" />
+	</h:panelGroup>
+	
+	<h:panelGroup layout="block" id="nodeResults">
+	<h:outputText id="logRequestResult" value="#{querystore.processing}" />
+	
 	<rich:panel styleClass="resultTable">
 		<f:facet name="header">
 			<!-- titlePrefix defined in file including this one  -->
 			<h:outputText value="Results by node" />
 		</f:facet>
+
 
 		<rich:dataTable id="previewTable" value="#{preview.nodes}" var="node"
 			onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
@@ -23,7 +31,7 @@
 			<f:facet name="header">
 				<rich:columnGroup>
 					<h:column>
-						<h:outputText styleClass="headerText" value="Name" />
+						<h:outputText styleClass="headerText" value="Name" />	
 					</h:column>
 					<h:column>
 						<h:outputText value="View data" styleClass="headerText" />
@@ -68,7 +76,7 @@
 
 			<h:column>
 				<h:outputText
-					value="#{registryFacade.getResourceTitle(node.ivoaID)}" />
+					value="#{registryFacade.getResourceTitle(node.ivoaID)}" />				
 			</h:column>
 			<h:column>
 				<h:selectOneMenu id="somp"
@@ -85,11 +93,6 @@
 						<a4j:poll id="consumerPoll" interval="1000"
 							enabled="#{consumers.processing}" reRender="consumerUpdate" />
 					</a4j:region>
-					<a4j:outputPanel rendered="#{consumers.ok}">
-						<script>
-							window.open("#{consumers.location}");
-						</script>
-					</a4j:outputPanel>
 					<h:graphicImage value="/img/waitingIcon.gif" width="16" height="16"
 						rendered="#{consumers.processing}" />
 					<h:graphicImage value="/img/error.gif" id="consumerErrorImg"
@@ -125,10 +128,27 @@
 			</h:column>
 
 			<h:column>
-				<h:outputLink value="#{node.fullQueryURL}" target="_blank"
-					rendered="#{node.isOk()}">
-					<h:outputText value="XSAMS" />
-				</h:outputLink>
+				<h:panelGroup >					
+					<a4j:commandButton value="XSAMS file" reRender="nodeResults"  
+					onclick="window.open('#{node.fullQueryURL}');document.getElementById('j_id23:logRequestResult').innerHTML = ''; \
+					document.getElementById('j_id23:logRequestStatus').innerHTML = 'Association process for #{registryFacade.getResourceTitle(node.ivoaID)} started';"
+					action="#{querystore.associateRequest(node.requestToken, node.ivoaID)}"  
+					id="button" eventsQueue="portalQueue" rendered="#{node.isOk()}" disabled="#{!preview.done }">	
+					</a4j:commandButton>
+				</h:panelGroup>
+				<br/>
+				<h:outputText value="" />
+				<h:panelGroup rendered="#{querystore.getNodeUuid(node.ivoaID).status eq 'success' }">
+					<h:outputLink value="http://cite.vamdc.eu/references.html?uuid=#{querystore.getNodeUuid(node.ivoaID).uuid}" target="_blank">
+						<h:outputText value="Citation link" />
+					</h:outputLink>
+				</h:panelGroup >
+				<h:panelGroup rendered="#{querystore.getNodeUuid(node.ivoaID).status eq 'error' }">
+						<h:outputText value="No citation link : #{querystore.getNodeUuid(node.ivoaID).errorMessage }" />
+				</h:panelGroup >
+				<h:panelGroup rendered="#{querystore.getNodeUuid(node.ivoaID).status eq 'empty' }">
+						<h:outputText value="No citation link : query not found in querystore" />
+				</h:panelGroup >		
 			</h:column>
 
 			<h:column>
@@ -149,8 +169,8 @@
 			<h:column>
 				<h:outputText value="#{node.nonRadiative}" />
 			</h:column>
-
 		</rich:dataTable>
 	</rich:panel>
-
+	</h:panelGroup>
 </ui:composition>
+
