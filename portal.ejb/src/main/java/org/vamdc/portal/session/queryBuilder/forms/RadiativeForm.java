@@ -33,7 +33,6 @@ public class RadiativeForm extends AbstractForm implements Form{
 		field.setPrefix("lower");
 		addField(field);
 		addField(new RangeField(Restrictable.RadTransProbabilityA,"Probability, A"));
-		addField(new RangeField(Restrictable.RadTransProbabilityLineStrength,"Line strength"));
 	}
 	
 	static ProxyRangeField setupWLField() {
