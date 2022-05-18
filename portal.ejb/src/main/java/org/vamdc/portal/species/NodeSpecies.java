@@ -68,30 +68,26 @@ public class NodeSpecies {
         	resultBean.setReady(true);
         	return;
     	}
-    	System.out.println("### test ");
     	resultBean.setMirrorCount(mirrors.size());
     	for(URL node:mirrors){
+    		
     		resultBean.setMessage("Timeout : query execution was too long.");
     		resultBean.nextMirror();
     		URL queryUrl=node;
 			System.out.println("query");
-			System.out.println(query);
-    		System.out.println(queryUrl);
+			
     		try {
     			queryUrl = new URL(node.toExternalForm()+query);
-
-    			System.out.print("queryUrl");
-    			System.out.print(queryUrl);
+    			System.out.println(queryUrl);
     			resultBean.setFormattedResult( formatRequestResult(queryUrl));
-    			resultBean.setMessage("");
+    			resultBean.setMessage("");    			
     			resultBean.setReady(true);
     			return;
     		} catch (MalformedURLException e) {
     			// TODO Auto-generated catch block
     			resultBean.setMessage("Incorrect service URL "+queryUrl);
     		} catch (IOException e) {
-    			// TODO Auto-generated catch block
-    			
+    			// TODO Auto-generated catch block    		
     			e.printStackTrace();
     			resultBean.setMessage("Error while proceeding request");
     		} catch (TransformerException e) {
@@ -102,9 +98,14 @@ public class NodeSpecies {
     			if(e.getCode() == 204) {
     				resultBean.setMessage("Request returned an empty response");
     			} else if(e.getCode() >= 400){
+    				System.out.println(e);
     				resultBean.setMessage("Node returned the error " +e.getCode() +" while processing the request "+queryUrl);
     			}
-    		}finally{
+    		}catch(Exception e) {
+    			System.out.println(e);
+    			resultBean.setMessage("An exception occurred");
+    		}
+    		finally{
     			resultBean.setReady(true);
     		}
 		}
@@ -117,11 +118,8 @@ public class NodeSpecies {
      * @throws IOException
      * @throws TransformerException
      */
-    private static String formatRequestResult(URL url) throws IOException, TransformerException, PortalHttpException{
-    	System.out.print("###");
-    	System.out.print(url);
+    private/* static */ String formatRequestResult(URL url) throws IOException, TransformerException, PortalHttpException{
     	HttpURLConnection c = (HttpURLConnection)url.openConnection();
-    	
     	if(c.getResponseCode() == 200){
 			c.setConnectTimeout(Settings.HTTP_CONNECT_TIMEOUT.getInt());
 			c.setReadTimeout(Settings.HTTP_DATA_TIMEOUT.getInt());
@@ -137,7 +135,12 @@ public class NodeSpecies {
 	        
 	        return bOut.toString();
     	}else{
-    		throw new PortalHttpException("Http error while executing TAP request", c.getResponseCode());
+    		if(c.getResponseCode() == 301 || c.getResponseCode() == 302){
+    			String newUrl = c.getHeaderField("Location");  			
+    			return this.formatRequestResult(new URL(newUrl));
+    		}else {    			
+    			throw new PortalHttpException("Http error while executing TAP request", c.getResponseCode());
+    		}
     	}
     }
 }
